@@ -1,0 +1,83 @@
+<div class="sidebar-nav">
+    <div class="nav-item">
+        <label for="select-facility">Facility</label>
+        <select name="select-facility" id="select-facility" class="nav-select">
+            <option value="JA">JA TOPSIDE</option>
+            <option value="KA">KA TOPSIDE</option>
+            <option value="JA&KA">ALL</option>
+        </select>
+    </div>
+    <div class="nav-item">
+        <label for="select-phase">Phase</label>
+        <select name="select-phase" id="select-phase" class="nav-select">
+            <option value="RFC">RFC</option>
+            <option value="AOC">AOC</option>
+            <option value="RFC&AOC">ALL</option>
+        </select>
+
+    </div>
+    <div class="nav-item">
+        <label for="select-discipline">Discipline</label>
+        <select name="select-discipline" id="select-discipline" class="nav-select">
+        </select>
+    </div>
+
+    <div class="nav-item">
+        <label for="select-subsystem">Sub-System</label>
+        <select name="select-subsystem" id="select-subsystem" class="nav-select">
+        </select>
+    </div>
+
+    <div class="nav-item">
+        <div class="btn btn-navbar" id="btn-filter">Filter</div>
+    </div>
+
+    <div class="nav-item last">
+        <div class="btn btn-navbar" id="btn-refresh">
+            <i class="fas fa-rotate" aria-hidden="false"></i>
+            <span> Refresh...</span>
+        </div>
+
+    </div>
+
+    <script>
+        const disciplines = [
+            { short: 'ELE', full: 'Electrical' },
+            { short: 'INS', full: 'Instrument' },
+            { short: 'PVV', full: 'Piping' },
+            { short: 'MEC', full: 'Mechanical' },
+            { short: 'TEL', full: 'Telecom' },
+            { short: 'BLD', full: 'Building' },
+            { short: 'SAF', full: 'Safety' },
+            { short: 'HVAC', full: 'HVAC' }]
+
+        const disciplinesWithAll = [...disciplines,
+        { short: 'ALL', full: 'ALL' }
+        ]
+        $(document).ready(function () {
+            $('#select-discipline').append(function () {
+                return disciplinesWithAll.map(x => `<option value="${x.short}">${x.full}</option>`).join('')
+            })
+
+            let subsystems = skylineData.map(x => {
+                return {
+                    "SubSystem": x.SubSystem,
+                    "Description": x.Description
+                }
+            })
+
+            subsystemsWithAll = [
+                {
+                    "SubSystem": 'ALL',
+                    "Description": "ALL"
+                }, ...subsystems
+            ]
+            $('#select-subsystem').append(function () {
+
+                return subsystems.map(x => `<option value="${x.SubSystem}">${x.SubSystem}</option>`).join('')
+            })
+
+        })
+    </script>
+
+</div>

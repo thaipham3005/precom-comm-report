@@ -1,0 +1,89 @@
+<div class="page">
+
+    <div class="card">
+        <div class="card-header"></div>
+        <div class="card-content row">
+            <div class="col-12">
+                <table id="table-skyline"
+                    class="table table-bordered compact header-contrast dt-responsive text-center has-buttons custom-scrollbar"
+                    style="width:100%; background-color: #fff;"></table>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            filteredData = skylineData.filter(x => x.Facility == selectFacility && x.Phase == selectPhase)
+
+            let tableData = filteredData.map(
+                x => {
+                    return {
+                        "__id": x.__id,
+                        "Index": x.Index,
+                        "Phase": x.Phase,
+                        "Facility": x.Facility,
+                        "SubSystem": x.SubSystem,
+                        "Description": x.Description,
+                        "TotalDone": x.TotalTotal > 0 ? x.TotalDone + " / " + x.TotalTotal : null,
+                        "Progress": x.Progress,
+                        "ELEDone": x.ELETotal > 0 ? x.ELEDone + " / " + x.ELETotal : null,
+                        "INSDone": x.INSTotal > 0 ? x.INSDone + " / " + x.INSTotal : null,
+                        "PVVDone": x.PVVTotal > 0 ? x.PVVDone + " / " + x.PVVTotal : null,
+                        "BLDDone": x.BLDTotal > 0 ? x.BLDDone + " / " + x.BLDTotal : null,
+                        "TELDone": x.TELTotal > 0 ? x.TELDone + " / " + x.TELTotal : null,
+                        "SAFDone": x.SAFTotal > 0 ? x.SAFDone + " / " + x.SAFTotal : null,
+                        "HVACDone": x.HVACTotal > 0 ? x.HVACDone + " / " + x.HVACTotal : null,
+                        "MECDone": x.MECTotal > 0 ? x.MECDone + " / " + x.MECTotal : null,
+                        "Priority": x.Priority,
+                        "PLA": x.PLA,
+                        "PLB": x.PLB,
+                        "PLC": x.PLC,
+                        "PlanRFC": x.PlanApproval,
+                        "ForecastWalkdown": x.ForecastWalkdown,
+                        "ReForecastWalkdown": x.ReForecastWalkdown,
+                        "ActualWalkdown": x.ActualWalkdown,
+                        // "ApprovedByCPYConst": x.ApprovedByCPYConst,
+                        "PartialApproved": x.PartialRFCApprovedByCPYCOM,
+                        "FinalApproved": x.FinalRFCApprovedByCPYCOM,
+                        "COW": x.COW,
+                        "HO": x.HO,
+                        // "WalkdownLeader": x.WalkdownLeader,
+                        "Remarks": x.Remarks,
+                        // "Comment1": x.Comment1,
+                        // "Comment2": x.Comment2,
+                        // "COW1": x.COW1,
+                        // "ELEWalkdown": x.ELEWalkdown,
+                        // "INSWalkdown": x.INSWalkdown,
+                        // "PVVWalkdown": x.PVVWalkdown,
+                        // "BLDWalkdown": x.BLDWalkdown,
+                        // "TELWalkdown": x.TELWalkdown,
+                        // "SAFWalkdown": x.SAFWalkdown,
+                        // "HVACWalkdown": x.HVACWalkdown,
+                        // "MECWalkdown": x.MECWalkdown,
+
+                    }
+                }
+            )
+
+            console.log(tableData);
+
+            let tableHeaders = Object.keys(tableData[0])
+
+            $("#table-skyline").html('<thead><tr>' +
+                tableHeaders.map(x => {
+                    if (x == "Description")
+                        return `<th style="min-width:300px;">${x}</th>`
+                    else if (x == "Remarks")
+                        return `<th style="min-width:200px;">${x}</th>`
+                    return `<th>${x}</th>`
+                }).join("")
+                + "</tr></thead>")
+
+            // console.log("Filtered data : ", filteredData)
+            tableSkyline("#table-skyline", tableData)
+
+            $('.card-header').text(`Skyline Data ${selectPhase} ${selectFacility} `)
+        })
+    </script>
+</div>

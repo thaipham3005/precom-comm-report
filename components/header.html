@@ -1,0 +1,53 @@
+<div class="header">
+  <div id="btn-menu" class="btn-menu btn btn-lg">
+    <i class="fas fa-th-large text-xl"></i>
+  </div>
+  <section class="brand">
+    <div class="logo"></div>
+    <div class="tradmark text-lg">PRECOM COMM REPORT</div>
+  </section>
+  <!-- <section class="space"></section> -->
+  <nav class="navbar">
+
+    <div class="nav-item" id="summary" data-target="summary">
+      Summary
+    </div>
+    <div class="nav-item" id="subsystem" data-target="subsystem">
+      Sub-system
+    </div>
+    <div class="nav-item" id="skyline" data-target="skyline">
+      Skyline
+    </div>
+
+    <div class="nav-item" id="settings" data-target="settings">
+      <span><i class="fas fa-cog"></i></span>
+    </div>
+
+  </nav>
+
+  <script>
+    $(document).ready(function () {
+      $('#summary, #subsystem, #skyline, #settings').on('click', function (e) {
+        let target = $(this)
+        let tab = $(target).attr('data-target')
+        localStorage.setItem('selectTab', tab)
+        navigate(tab)
+      })
+
+      $('#btn-menu').on('click', function (e) {
+        let hide = $('#main-sidebar').hasClass('hide')
+        if (!hide) {
+          $('#main-sidebar').addClass('hide')
+          $('#main-sidebar').attr('aria-display', 'hide')
+          localStorage.setItem('showSidebar', 0)
+        } else {
+          $('#main-sidebar').removeClass('hide')
+          $('#main-sidebar').attr('aria-display', 'show')
+          localStorage.setItem('showSidebar', 1)
+        }
+      })
+    })
+  </script>
+
+
+</div>
