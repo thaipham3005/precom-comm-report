@@ -10,20 +10,38 @@
   <nav class="navbar">
 
     <div class="nav-item" id="summary" data-target="summary">
-      Summary
+      <i class="fas fa-check-square text-lg"></i>
+      <span>Summary</span>
+
     </div>
     <div class="nav-item" id="subsystem" data-target="subsystem">
-      Sub-system
+      <i class="fas fa-table text-lg"></i>
+      <span>Sub-system</span>
     </div>
     <div class="nav-item" id="skyline" data-target="skyline">
-      Skyline
+      <i class="fas fa-chart-bar text-lg"></i>
+      <span>Skyline</span>
     </div>
 
-    <div class="nav-item" id="settings" data-target="settings">
-      <span><i class="fas fa-cog"></i></span>
+    <div class="nav-item" data-action="dropdown" target-action="#dropdown-settings">
+      <span><i class="fas fa-cogs text-lg"></i></span>
+
+    </div>
+
+    <div id="dropdown-settings" class="dropdown-list hidden">
+      <div id="settings" data-target="settings">
+        <i class="fas fa-cog"></i>
+        <span>Settings</span>
+      </div>
+      <div id="btn-refresh">
+        <i class="fas fa-sync-alt"></i>
+        <span>Refresh</span>
+      </div>
     </div>
 
   </nav>
+
+
 
   <script>
     $(document).ready(function () {
@@ -34,17 +52,36 @@
         navigate(tab)
       })
 
+      $('[data-action=dropdown]').on('click', function (e) {
+
+        let target = $(this).attr('target-action')
+        console.log($(target));
+        let isHidden = $(target).hasClass('hidden')
+        console.log(isHidden);
+        if (isHidden) {
+          $(target).removeClass('hidden')
+        } else {
+          $(target).addClass('hidden')
+        }
+      })
+
       $('#btn-menu').on('click', function (e) {
-        let hide = $('#main-sidebar').hasClass('hide')
+        let hide = $('#main-sidebar').hasClass('hidden')
         if (!hide) {
-          $('#main-sidebar').addClass('hide')
-          $('#main-sidebar').attr('aria-display', 'hide')
+          $('#main-sidebar').addClass('hidden')
+          $('#main-sidebar').attr('aria-display', 'hidden')
           localStorage.setItem('showSidebar', 0)
         } else {
-          $('#main-sidebar').removeClass('hide')
+          $('#main-sidebar').removeClass('hidden')
           $('#main-sidebar').attr('aria-display', 'show')
           localStorage.setItem('showSidebar', 1)
         }
+      })
+
+      $('#btn-refresh').on('click', function (e) {
+        localStorage.removeItem('errorCount')
+        localStorage.removeItem('skylineData')
+        window.location.reload()
       })
     })
   </script>

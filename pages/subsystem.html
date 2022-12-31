@@ -2,13 +2,14 @@
 
     <div class="card">
         <div class="card-header"></div>
-        <div class="card-content row">
-            <div class="col-12">
-                <table id="table-skyline"
-                    class="table table-bordered compact header-contrast dt-responsive text-center has-buttons custom-scrollbar"
-                    style="width:100%; background-color: #fff;"></table>
+        <div class="card-content">
+            <div class="row">
+                <div class="col-md-12 col-12">
+                    <table id="table-skyline"
+                        class="table table-bordered compact header-contrast dt-responsive text-center has-buttons custom-scrollbar"
+                        style="width:100%; background-color: #fff;"></table>
+                </div>
             </div>
-
         </div>
     </div>
 
@@ -25,21 +26,21 @@
                         "Facility": x.Facility,
                         "SubSystem": x.SubSystem,
                         "Description": x.Description,
-                        "TotalDone": x.TotalTotal > 0 ? x.TotalDone + " / " + x.TotalTotal : null,
-                        "Progress": x.Progress,
-                        "ELEDone": x.ELETotal > 0 ? x.ELEDone + " / " + x.ELETotal : null,
-                        "INSDone": x.INSTotal > 0 ? x.INSDone + " / " + x.INSTotal : null,
-                        "PVVDone": x.PVVTotal > 0 ? x.PVVDone + " / " + x.PVVTotal : null,
-                        "BLDDone": x.BLDTotal > 0 ? x.BLDDone + " / " + x.BLDTotal : null,
-                        "TELDone": x.TELTotal > 0 ? x.TELDone + " / " + x.TELTotal : null,
-                        "SAFDone": x.SAFTotal > 0 ? x.SAFDone + " / " + x.SAFTotal : null,
-                        "HVACDone": x.HVACTotal > 0 ? x.HVACDone + " / " + x.HVACTotal : null,
-                        "MECDone": x.MECTotal > 0 ? x.MECDone + " / " + x.MECTotal : null,
+                        "Progress": x.TotalTotal > 0 ? parseFloat((x.TotalDone * 100 / x.TotalTotal).toFixed(2)) : 0,
+                        "Total": x.TotalTotal > 0 ? x.TotalDone + " / " + x.TotalTotal : null,
+                        "ELE": x.ELETotal > 0 ? x.ELEDone + " / " + x.ELETotal : null,
+                        "INS": x.INSTotal > 0 ? x.INSDone + " / " + x.INSTotal : null,
+                        "PVV": x.PVVTotal > 0 ? x.PVVDone + " / " + x.PVVTotal : null,
+                        "BLD": x.BLDTotal > 0 ? x.BLDDone + " / " + x.BLDTotal : null,
+                        "TEL": x.TELTotal > 0 ? x.TELDone + " / " + x.TELTotal : null,
+                        "SAF": x.SAFTotal > 0 ? x.SAFDone + " / " + x.SAFTotal : null,
+                        "HVAC": x.HVACTotal > 0 ? x.HVACDone + " / " + x.HVACTotal : null,
+                        "MEC": x.MECTotal > 0 ? x.MECDone + " / " + x.MECTotal : null,
                         "Priority": x.Priority,
                         "PLA": x.PLA,
                         "PLB": x.PLB,
                         "PLC": x.PLC,
-                        "PlanRFC": x.PlanApproval,
+                        "PlanApproval": x.PlanApproval,
                         "ForecastWalkdown": x.ForecastWalkdown,
                         "ReForecastWalkdown": x.ReForecastWalkdown,
                         "ActualWalkdown": x.ActualWalkdown,
@@ -47,7 +48,7 @@
                         "PartialApproved": x.PartialRFCApprovedByCPYCOM,
                         "FinalApproved": x.FinalRFCApprovedByCPYCOM,
                         "COW": x.COW,
-                        "HO": x.HO,
+                        "Handover": x.Handover,
                         // "WalkdownLeader": x.WalkdownLeader,
                         "Remarks": x.Remarks,
                         // "Comment1": x.Comment1,
@@ -66,16 +67,20 @@
                 }
             )
 
-            console.log(tableData);
+            // console.log(tableData);
 
             let tableHeaders = Object.keys(tableData[0])
 
             $("#table-skyline").html('<thead><tr>' +
                 tableHeaders.map(x => {
                     if (x == "Description")
-                        return `<th style="min-width:300px;">${x}</th>`
+                        return `<th style="min-width:200px;">${x}</th>`
                     else if (x == "Remarks")
                         return `<th style="min-width:200px;">${x}</th>`
+                    else if (['Total', 'ELE', 'INS', 'PVV', 'TEL', 'SAF', 'BLD', 'HVAC', 'MEC'].includes(x)) {
+                        return `<th style="min-width:40px;">${x}</th>`
+                    }
+
                     return `<th>${x}</th>`
                 }).join("")
                 + "</tr></thead>")
@@ -83,7 +88,7 @@
             // console.log("Filtered data : ", filteredData)
             tableSkyline("#table-skyline", tableData)
 
-            $('.card-header').text(`Skyline Data ${selectPhase} ${selectFacility} `)
+            $('.card-header').text(`Sub-System Status ${selectPhase} ${selectFacility} `)
         })
     </script>
 </div>

@@ -32,14 +32,6 @@
         <div class="btn btn-navbar" id="btn-filter">Filter</div>
     </div>
 
-    <div class="nav-item last">
-        <div class="btn btn-navbar" id="btn-refresh">
-            <i class="fas fa-rotate" aria-hidden="false"></i>
-            <span> Refresh...</span>
-        </div>
-
-    </div>
-
     <script>
         const disciplines = [
             { short: 'ELE', full: 'Electrical' },
@@ -76,6 +68,8 @@
 
                 return subsystems.map(x => `<option value="${x.SubSystem}">${x.SubSystem}</option>`).join('')
             })
+
+
 
         })
     </script>

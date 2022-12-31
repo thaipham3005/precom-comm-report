@@ -5,7 +5,7 @@ body {
   width: 100vw;
   height: 100vh;
   min-width: 450px !important;
-  font-size: 0.8rem !important;
+  font-size: 0.9rem !important;
   font-weight: 400 !important;
   overflow-x: hidden;
   overflow-y: auto;
@@ -51,7 +51,6 @@ textarea {
 
 table {
   width: 100%;
-  font-size: 0.9rem;
 }
 table.header-contrast thead tr {
   background: #666;
@@ -59,8 +58,13 @@ table.header-contrast thead tr {
 table.header-contrast thead tr th,
 table.header-contrast thead tr th::after,
 table.header-contrast thead tr th::before {
-  font-weight: 400;
+  font-weight: 300;
   color: #fff;
+}
+table.header-contrast thead tr th td,
+table.header-contrast thead tr th::after td,
+table.header-contrast thead tr th::before td {
+  vertical-align: middle;
 }
 table.no-header thead {
   display: none;
@@ -87,9 +91,16 @@ table [level="99"] {
   background: #666;
   color: #fff;
 }
+table.compact {
+  font-size: 0.8rem;
+}
 table.compact tr td,
 table.compact th td {
-  padding: 2px;
+  padding: 2px 4px;
+}
+table.compact .progress,
+table.compact .progress-bar {
+  height: 15px !important;
 }
 
 button {
@@ -147,6 +158,11 @@ select {
 
 .btn-round {
   border-radius: 50%;
+}
+
+.no-wrap {
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .wrapper {
@@ -208,6 +224,7 @@ select {
 }
 
 #main-header {
+  z-index: 99;
   width: 100vw;
   height: 60px;
   background-color: #333;
@@ -229,6 +246,7 @@ select {
 }
 
 #main-sidebar {
+  z-index: 98;
   width: 160px;
   flex-shrink: 0;
   background-color: #9a9a9a;
@@ -236,9 +254,41 @@ select {
   box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.1);
   transition: width 0.5s;
 }
-#main-sidebar.hide {
+#main-sidebar.hidden {
   display: none;
   transition: width 0.5s;
+}
+
+#dropdown-settings {
+  position: fixed;
+  top: 60px;
+  right: 30px;
+  min-height: 60px;
+  height: -webkit-max-content;
+  height: -moz-max-content;
+  height: max-content;
+  width: 180px;
+  z-index: 100;
+}
+
+.dropdown-list {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #333;
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.2);
+  transition: height 0.5s ease-in-out;
+}
+.dropdown-list div {
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+.dropdown-list div:hover {
+  background-color: #666;
 }
 
 .sidebar-nav {
@@ -325,15 +375,26 @@ select {
   align-self: flex-end;
 }
 
+.hidden {
+  visibility: hidden;
+}
+
 .card {
+  z-index: 10;
   margin: 10px;
   padding: 5px;
   border-radius: 10px;
   box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
 }
 .card .card-header {
   width: 100%;
+  font-weight: 800;
+  font-size: 1.2rem;
+  text-align: center;
   background-color: #fff;
+  padding: 4px;
 }
 .card .card-content {
   width: 100%;
@@ -379,6 +440,29 @@ select {
   box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
   -webkit-box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
   display: block;
+}
+
+.final {
+  background-color: #9af0ae;
+}
+
+.partial {
+  background-color: #9af0ae;
+}
+
+.walkdown {
+  background-color: #f2f672;
+}
+
+.ready {
+  background-color: #8cdef3;
+}
+
+.sub-system {
+  cursor: pointer;
+}
+.sub-system:hover {
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 @media screen and (max-width: 580px) {
