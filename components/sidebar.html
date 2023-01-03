@@ -1,10 +1,17 @@
 <div class="sidebar-nav">
     <div class="nav-item">
+        <label for="select-location">Location</label>
+        <select name="select-location" id="select-location" class="nav-select">
+            <option value="ALL">ALL</option>
+            <option value="ONV">Onshore</option>
+            <option value="OFQ">Offshore</option>
+        </select>
+    </div>
+    <div class="nav-item">
         <label for="select-facility">Facility</label>
         <select name="select-facility" id="select-facility" class="nav-select">
             <option value="JA">JA TOPSIDE</option>
             <option value="KA">KA TOPSIDE</option>
-            <option value="JA&KA">ALL</option>
         </select>
     </div>
     <div class="nav-item">
@@ -12,7 +19,7 @@
         <select name="select-phase" id="select-phase" class="nav-select">
             <option value="RFC">RFC</option>
             <option value="AOC">AOC</option>
-            <option value="RFC&AOC">ALL</option>
+            <!-- <option value="RFC&AOC">ALL</option> -->
         </select>
 
     </div>
@@ -43,8 +50,9 @@
             { short: 'SAF', full: 'Safety' },
             { short: 'HVAC', full: 'HVAC' }]
 
-        const disciplinesWithAll = [...disciplines,
-        { short: 'ALL', full: 'ALL' }
+        const disciplinesWithAll = [
+            { short: 'ALL', full: 'ALL' },
+            ...disciplines
         ]
         $(document).ready(function () {
             $('#select-discipline').append(function () {
@@ -66,7 +74,7 @@
             ]
             $('#select-subsystem').append(function () {
 
-                return subsystems.map(x => `<option value="${x.SubSystem}">${x.SubSystem}</option>`).join('')
+                return subsystemsWithAll.map(x => `<option value="${x.SubSystem}">${x.SubSystem}</option>`).join('')
             })
 
 

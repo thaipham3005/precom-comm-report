@@ -87,11 +87,14 @@
 
     <div class="content-wrapper">
       <aside id="main-sidebar" aria-display="show"></aside>
+      <div id="page-loader" class="loader"></div>
       <div class="content">
-        <div id="page-content" class="page-content custom-scrollbar">
+        <div class="page-content custom-scrollbar">
+          <div class="pages" id="pages"></div>
+          <footer id="main-footer" />
 
         </div>
-        <footer id="main-footer" />
+        <!-- <footer id="main-footer" /> -->
       </div>
     </div>
   </div>
@@ -100,6 +103,8 @@
 </html>
 
 <script>
+  let domain = window.location.pathname
+  console.log(domain);
   let service = 'sheetlabs'
   let selectFacility = localStorage.getItem('facility') || 'JA'
   let selectPhase = localStorage.getItem('phase') || 'RFC'
@@ -109,10 +114,14 @@
   let isDataPresence = ''
   let isSidebarShow = true
   let skylineData = []
+  let summaryData = []
+  let skylineChartData = []
   let errorCount = parseInt(localStorage.getItem('errorCount')) || 0
   let selection = [selectFacility, selectPhase, selectDiscipline]
-  let filter = ''
+  let filterParams = ''
   let filteredData = []
+  let table
+
 
   const navigation = [
     {
@@ -154,141 +163,12 @@
   $('#main-footer').load('./components/footer.html')
   $('#main-sidebar').load('./components/sidebar.html')
 
-  async function fetchSkylineData(phase = null, facility = null, discipline = null) {
-    let fetchAPI = API.filter(x => x.host == service)[0].data.skylineData
-    let paramQuery = ''
-    paramQuery = phase ? `Phase=${phase}&` : ''
-    paramQuery += facility ? `Facility=${facility}&` : ''
-    paramQuery += discipline ? `Discipline=${discipline}&` : ''
-
-    if (paramQuery.slice(-1) == '&') { paramQuery = paramQuery.slice(0, -1) }
-
-    fetchAPI = fetchAPI + '?' + paramQuery
-
-    // console.log(fetchAPI)
-
-    await fetch(fetchAPI)
-      .then(res => res.json())
-      .then(data => {
-
-        localStorage.setItem('skylineData', JSON.stringify({
-          data: data,
-          expiry: moment(new Date()).add(4, 'hours')
-        }))
-        isDataPresence = true
-        skylineData = data
-
-        // console.log('fetched : ', skylineData)
-      })
-
-
-    // if (facility) {
-    //   await fetch(`https://app.sheetlabs.com/RWIN/SkylineData?Phase=${phase}&Facility=${facility}`)
-    //     .then(res => res.json())
-    //     .then(data => {
-
-    //       localStorage.setItem('skylineData', JSON.stringify({
-    //         data: data,
-    //         expiry: moment(new Date()).add(4, 'hours')
-    //       }))
-    //       isDataPresence = true
-    //       skylineData = data
-
-    //       console.log('fetched : ', skylineData)
-    //     })
-    // }
-    // else {
-    //   await fetch(`https://app.sheetlabs.com/RWIN/SkylineData?Phase=${phase}`)
-    //     .then(res => res.json())
-    //     .then(data => {
-
-    //       localStorage.setItem('skylineData', JSON.stringify({
-    //         data: data,
-    //         expiry: moment(new Date()).add(4, 'hours')
-    //       }))
-    //       isDataPresence = true
-    //       skylineData = data
-
-    //       console.log('fetched : ', skylineData)
-    //     })
-    // }
-
-  }
-
-  function preloadPage(tab) {
-    if (errorCount >= 3) {
-      navigate('errorBackend')
-    } else {
-      navigate(tab)
-    }
-    isSidebarShow = localStorage.getItem('showSidebar') ? parseInt(localStorage.getItem('showSidebar')) : 0
-    if (isSidebarShow == 0) {
-      $('#main-sidebar').addClass('hidden')
-    } else {
-      $('#main-sidebar').removeClass('hidden')
-
-    }
-  }
-
-  function navigate(tab) {
-    preloadData()
-    $(`#${tab}`).siblings().removeClass('active')
-    $(`#${tab}`).addClass('active')
-
-    let navHtml = navigation.filter(p => p.page == tab) ? navigation.filter(p => p.page == tab)[0].location :
-      navigation.filter(p => p.page == 'error404')[0].location
-    $('#page-content').load(navHtml)
-  }
-
-
-  async function preloadData() {
-    if (errorCount >= 3) {
-      localStorage.setItem('errorCount', '3')
-      return
-
-    }
-    storedData = JSON.parse(localStorage.getItem('skylineData'))
-    isDataPresence = (storedData != '' && storedData != null) ? true : false
-
-    if (isDataPresence == false) {
-      await fetchSkylineData()
-      // await fetchSkylineData(selectPhase)
-
-      let _storedData = JSON.parse(localStorage.getItem('skylineData'))
-      if (_storedData == '' || _storedData == null) {
-        errorCount++
-        localStorage.setItem('errorCount', errorCount)
-      }
-
-      await window.location.reload()
-    }
-    else {
-
-      if (moment(storedData.expiry).diff(Date.now()) < 0) {
-        localStorage.removeItem('skylineData')
-        await fetchSkylineData(selectPhase)
-        let _storedData = JSON.parse(localStorage.getItem('skylineData'))
-        if (_storedData == '' || _storedData == null) {
-          errorCount++
-          localStorage.setItem('errorCount', errorCount)
-        }
-        await window.location.reload()
-
-      }
-      else {
-        skylineData = storedData.data
-      }
-    }
-
-    // console.log('pulled from storage ; ', skylineData)
-
-  }
 
   $(document).ready(function () {
     preloadPage(selectTab)
 
-    let err = skylineData.filter(x => x.Progress > 100)
-    console.log('Error : ', err);
+    // let err = skylineData.filter(x => x.Progress > 100)
+    // console.log('Error : ', err);
 
   })
 

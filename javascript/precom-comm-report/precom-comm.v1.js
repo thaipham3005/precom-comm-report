@@ -1,5 +1,129 @@
-const tableSkyline = (tableElement, data) => {
+function removeLoader() {
+    $('#page-loader').addClass('hidden')
+}
 
+function invokeLoader() {
+    $('#page-loader').removeClass('hidden')
+}
+
+async function reloadPage() {
+    await navigate(selectTab)
+    // await window.location.reload()
+
+}
+
+async function fetchSkylineData(phase = null, facility = null, discipline = null) {
+    let fetchAPI = API.filter(x => x.host == service)[0].data.skylineData
+    let paramQuery = ''
+    paramQuery = phase ? `Phase=${phase}&` : ''
+    paramQuery += facility ? `Facility=${facility}&` : ''
+    paramQuery += discipline ? `Discipline=${discipline}&` : ''
+
+    if (paramQuery.slice(-1) == '&') { paramQuery = paramQuery.slice(0, -1) }
+
+    fetchAPI = fetchAPI + '?' + paramQuery
+
+    // console.log(fetchAPI)
+
+    await fetch(fetchAPI)
+        .then(res => res.json())
+        .then(data => {
+            localStorage.setItem('skylineData', JSON.stringify({
+                data: data,
+                expiry: moment(new Date()).add(8, 'hours')
+            }))
+            isDataPresence = true
+            skylineData = data
+            console.log('fetched : ', skylineData)
+
+            removeLoader()
+
+        })
+}
+
+function preloadPage(tab) {
+    if (errorCount >= 3) {
+        navigate('errorBackend')
+    } else {
+        navigate(tab)
+    }
+    isSidebarShow = localStorage.getItem('showSidebar') ? parseInt(localStorage.getItem('showSidebar')) : 0
+    if (isSidebarShow == 0) {
+        $('#main-sidebar').addClass('hidden')
+    } else {
+        $('#main-sidebar').removeClass('hidden')
+
+    }
+}
+
+function navigate(tab) {
+    preloadData()
+    $(`#${tab}`).siblings().removeClass('active')
+    $(`#${tab}`).addClass('active')
+    let navHtml = ''
+    let isNavigatable = navigation.filter(p => p.page == tab) ? true : false
+    if (isNavigatable) {
+        navHtml = navigation.filter(p => p.page == tab)[0].location
+    } else {
+        navHtml = navigation.filter(p => p.page == 'error404')[0].location
+    }
+
+    $('#pages').load(navHtml)
+
+}
+
+async function preloadData() {
+    if (errorCount >= 3) {
+        localStorage.setItem('errorCount', '3')
+        return
+
+    }
+    storedData = JSON.parse(localStorage.getItem('skylineData'))
+    isDataPresence = (storedData != '' && storedData != null) ? true : false
+
+    if (isDataPresence == false) {
+        await fetchSkylineData()
+        // await fetchSkylineData(selectPhase)
+
+        let _storedData = JSON.parse(localStorage.getItem('skylineData'))
+        if (_storedData == '' || _storedData == null) {
+            errorCount++
+            localStorage.setItem('errorCount', errorCount)
+        }
+
+        await reloadPage()
+    }
+    else {
+
+        if (moment(storedData.expiry).diff(Date.now()) < 0) {
+            localStorage.removeItem('skylineData')
+            await fetchSkylineData(selectPhase)
+            let _storedData = JSON.parse(localStorage.getItem('skylineData'))
+            if (_storedData == '' || _storedData == null) {
+                errorCount++
+                localStorage.setItem('errorCount', errorCount)
+            }
+            await reloadPage()
+
+        }
+        else {
+            removeLoader()
+            skylineData = storedData.data
+        }
+    }
+
+    // console.log('pulled from storage ; ', skylineData)
+
+}
+
+async function summary() {
+
+}
+
+const tableSkyline = (tableElement, data) => {
+    if (typeof table != "undefined" && table != null) {
+        table.destroy();
+    }
     table = $(tableElement).DataTable({
         data: data,
         columns: [
@@ -253,9 +377,9 @@ const tableSkyline = (tableElement, data) => {
         searching: true,
         paging: false,
         ordering: false,
-        info: true,
+        info: false,
         scrollX: "100%",
-        scrollY: "60vh",
+        scrollY: "65vh",
         scrollCollapse: true,
         createdRow: function (row, data, index) {
             if (data["FinalApproved"] != null) {
@@ -267,4 +391,6 @@ const tableSkyline = (tableElement, data) => {
             }
         },
     });
+
+    $('.dataTables_scrollBody').addClass('custom-scrollbar')
 }
