@@ -51,7 +51,7 @@
             { short: 'HVAC', full: 'HVAC' }]
 
         const disciplinesWithAll = [
-            { short: 'ALL', full: 'ALL' },
+            { short: 'All', full: 'ALL' },
             ...disciplines
         ]
         $(document).ready(function () {
@@ -68,16 +68,64 @@
 
             subsystemsWithAll = [
                 {
-                    "SubSystem": 'ALL',
+                    "SubSystem": 'All',
                     "Description": "ALL"
                 }, ...subsystems
             ]
             $('#select-subsystem').append(function () {
-
                 return subsystemsWithAll.map(x => `<option value="${x.SubSystem}">${x.SubSystem}</option>`).join('')
             })
+            $('#select-location').val(selectLocation)
+            $('#select-facility').val(selectFacility)
+            $('#select-phase').val(selectPhase)
+            $('#select-discipline').val(selectDiscipline)
+            $('#select-subsystem').val(selectSubsystem)
 
 
+            $('#select-location').on('change', function (e) {
+                selectLocation = $(this).val()
+                storedSelection = {
+                    ...storedSelection,
+                    ...{
+                        location: selectLocation
+                    }
+                }
+                // console.log(storedSelection);
+                localStorage.setItem('storedSelection', JSON.stringify(storedSelection))
+            })
+
+            $('#select-facility').on('change', function (e) {
+                selectFacility = $(this).val()
+                storedSelection = {
+                    ...storedSelection,
+                    ...{
+                        facility: selectFacility
+                    }
+                }
+                localStorage.setItem('storedSelection', JSON.stringify(storedSelection))
+            })
+
+            $('#select-phase').on('change', function (e) {
+                selectPhase = $(this).val()
+                storedSelection = {
+                    ...storedSelection,
+                    ...{
+                        phase: selectPhase
+                    }
+                }
+                localStorage.setItem('storedSelection', JSON.stringify(storedSelection))
+            })
+
+            $('#select-discipline').on('change', function (e) {
+                selectDiscipline = $(this).val()
+                storedSelection = {
+                    ...storedSelection,
+                    ...{
+                        disciplines: selectDiscipline
+                    }
+                }
+                localStorage.setItem('storedSelection', JSON.stringify(storedSelection))
+            })
 
         })
     </script>

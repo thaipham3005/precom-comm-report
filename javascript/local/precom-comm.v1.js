@@ -1,3 +1,60 @@
+const navigation = [
+    {
+        page: 'summary',
+        location: './pages/summary.html'
+    }, {
+        page: 'subsystem',
+        location: './pages/subsystem.html'
+    }, {
+        page: 'skyline',
+        location: './pages/skyline.html'
+    }, {
+        page: 'scurvecs',
+        location: './pages/scurvecs.html'
+    }, {
+        page: 'scurvedossier',
+        location: './pages/scurvedossier.html'
+    }, {
+        page: 'settings',
+        location: './pages/settings.html'
+    }, {
+        page: 'error404',
+        location: './pages/error404.html'
+    }, {
+        page: 'error401',
+        location: './pages/unauthorized.html'
+    }, {
+        page: 'errorBackend',
+        location: './pages/failedbackend.html'
+    }
+]
+
+const deployId = 'AKfycbxxrLHgEv-TaUir4h2zYLyfbxMewaMem6Y-XXAiUkJnI_TkARQRK-epWShIPAYoB7lS'
+const deployAdress = `https://script.google.com/macros/s/${deployId}/exec?`
+const API = [
+    {
+        host: 'sheetlabs',
+        data: {
+            skylineData: 'https://app.sheetlabs.com/RWIN/SkylineData',
+            // checksheetSummary: 'https://app.sheetlabs.com/RWIN/ChecksheetSummary'
+        }
+    },
+    {
+        host: 'GoogleSheetAPI',
+        data: {
+            settings: deployAdress + 'action=getSettings',
+            summary: deployAdress + 'action=getSummary',
+            skylineData: deployAdress + 'action=getSkyline',
+            skylineDataV2: deployAdress + 'action=getSkylineV2',
+            skylineDataV3: deployAdress + 'action=getSkylineV3',
+            checksheetSummary: deployAdress + 'action=getCheckSheetSummary',
+            rawData: deployAdress + 'action=getRawData',
+            rawPunchList: deployAdress + 'action=getRawPunchList',
+        }
+    }
+
+]
+
 function removeLoader() {
     $('#page-loader').addClass('hidden')
 }
@@ -9,7 +66,6 @@ function invokeLoader() {
 async function reloadPage() {
     await navigate(selectTab)
     // await window.location.reload()
-
 }
 
 async function fetchSkylineData(phase = null, facility = null, discipline = null) {
@@ -21,20 +77,37 @@ async function fetchSkylineData(phase = null, facility = null, discipline = null
 
     if (paramQuery.slice(-1) == '&') { paramQuery = paramQuery.slice(0, -1) }
 
-    fetchAPI = fetchAPI + '?' + paramQuery
-
+    fetchAPI = fetchAPI + '&' + paramQuery
     // console.log(fetchAPI)
 
     await fetch(fetchAPI)
         .then(res => res.json())
         .then(data => {
+            skylineData = data.data
             localStorage.setItem('skylineData', JSON.stringify({
-                data: data,
+                data: skylineData,
                 expiry: moment(new Date()).add(8, 'hours')
             }))
             isDataPresence = true
-            skylineData = data
+
             console.log('fetched : ', skylineData)
+
+            removeLoader()
+
+        })
+}
+
+async function fetchSummary() {
+    const fetchAPI = API.filter(x => x.host == service)[0].data.summary
+    await fetch(fetchAPI)
+        .then(res => res.json())
+        .then(data => {
+            summaryData = data.data
+            localStorage.setItem('summaryData', JSON.stringify({
+                data: summaryData,
+                expiry: moment(new Date()).add(8, 'hours')
+            }))
+            console.log('fetched summary : ', summaryData)
 
             removeLoader()
 
@@ -111,13 +184,68 @@ async function preloadData() {
             skylineData = storedData.data
         }
     }
-
     // console.log('pulled from storage ; ', skylineData)
 
 }
 
 async function summary() {
+    // console.log(skylineData);
+    let _phases = skylineData.map(x => x.Phase).distinct()
+    let _locations = skylineData.map(x => x.Location).distinct()
+    let _facilities = skylineData.map(x => x.Facility).distinct()
 
+    RFCreports = _facilities.map(facility => {
+        _filteredData = skylineData.filter(x => x.Facility == facility && x.Phase == 'RFC' && x.Location == 'ONV')
+        dossierDone = _filteredData.filter(x => (x.FinalRFCApprovedByCPYCOM != null && x.FinalRFCApprovedByCPYCOM != '') || (x.PartialRFCApprovedByCPYCOM != null && x.PartialRFCApprovedByCPYCOM != ''))
+        cow = _filteredData.filter(x => x.COW != null && x.COW != '')
+        return {
+            Facility: facility,
+            ChecksheetTotal: _filteredData.map(x => x.TotalTotal)
+                .reduce((sum, x) => (sum += parseInt(x))),
+            ChecksheetDone: _filteredData.map(x => x.TotalDone)
+                .reduce((sum, x) => (sum += parseInt(x))),
+            DossierTotal: _filteredData.length,
+            DossierDone: dossierDone.length,
+            DossierDoneSubSystems: dossierDone
+                .map(x => ({
+                    SubSystem: x.SubSystem,
+                    Description: x.Description,
+                    HandOver: x.HandOver,
+                    FinalApprovalDate: x.FinalRFCApprovedByCPYCOM,
+                    PartialApprovalDate: x.PartialRFCApprovedByCPYCOM
+                })),
+            COW: cow.length,
+            COWSubSystems: cow.map(x => ({
+                SubSystem: x.SubSystem,
+                Description: x.Description
+            }))
+        }
+    })
+
+    AOCreports = _facilities.map(facility => {
+        _filteredData = skylineData.filter(x => x.Facility == facility && x.Phase == 'AOC' && x.Location == 'ONV')
+        return {
+            Facility: facility,
+            ChecksheetTotal: _filteredData.map(x => x.TotalTotal)
+                .reduce((sum, x) => (sum += parseInt(x))),
+            ChecksheetDone: _filteredData.map(x => x.TotalDone)
+                .reduce((sum, x) => (sum += parseInt(x))),
+            DossierTotal: _filteredData.length,
+            DossierDone: _filteredData.filter(x => x.FinalRFCApprovedByCPYCOM != null).length,
+            DossierDoneSubSystems: _filteredData.filter(x => x.FinalRFCApprovedByCPYCOM != null)
+                .map(x => ({
+                    SubSystem: x.SubSystem,
+                    Description: x.Description,
+                    HandOver: x.HandOver,
+                    FinalRFCApprovedByCPYCOM: x.FinalRFCApprovedByCPYCOM,
+                    PartialRFCApprovedByCPYCOM: x.PartialRFCApprovedByCPYCOM
+                })),
+            COW: _filteredData.filter(x => x.COW != null).length,
+            COWSubSystems: _filteredData.filter(x => x.COW != null).map(x => x.SubSystem)
+        }
+    })
+    // console.log(skylineData)
+    // console.log(RFCreports);
 }
 
 const tableSkyline = (tableElement, data) => {
@@ -128,7 +256,7 @@ const tableSkyline = (tableElement, data) => {
         data: data,
         columns: [
             {
-                data: "__id",
+                data: null,
             },
             {
                 data: "Index",
@@ -188,7 +316,7 @@ const tableSkyline = (tableElement, data) => {
                 data: "PLC",
             },
             {
-                data: "PlanRFC",
+                data: "PlanApproval",
             },
             {
                 data: "ForecastWalkdown",
@@ -209,10 +337,10 @@ const tableSkyline = (tableElement, data) => {
                 data: "COW",
             },
             {
-                data: "Handover",
+                data: "HandOver",
             },
             // {
-            //     data: "WalkdownLeader",
+            //     data: "Status",
             // },
             {
                 data: "Remarks",
@@ -382,9 +510,9 @@ const tableSkyline = (tableElement, data) => {
         scrollY: "65vh",
         scrollCollapse: true,
         createdRow: function (row, data, index) {
-            if (data["FinalApproved"] != null) {
+            if (data["FinalApproved"] != null && data["FinalApproved"] != '') {
                 $(row).addClass("final");
-            } else if (data["ActualWalkdown"] != null) {
+            } else if (data["ActualWalkdown"] != null && data["ActualWalkdown"] != '') {
                 $(row).addClass("walkdown");
             } else if (data["Progress"] > 80) {
                 $(row).addClass("ready");
@@ -393,4 +521,17 @@ const tableSkyline = (tableElement, data) => {
     });
 
     $('.dataTables_scrollBody').addClass('custom-scrollbar')
+}
+
+Array.prototype.distinct = function (value, index, array) {
+    // Method cannot be run on an array that does not exist.
+    if (this == null) {
+        throw new TypeError('this is null or not defined');
+    }
+
+    function _distinct(row, index, self) {
+        return self.indexOf(row) === index;
+    }
+
+    return this.filter(_distinct);
 }

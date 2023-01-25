@@ -10,7 +10,7 @@
   <nav class="navbar">
 
     <div class="nav-item" id="summary" data-target="summary">
-      <i class="far fa-check-square text-lg"></i>
+      <i class="fas fa-chart-pie text-lg"></i>
       <span>Summary</span>
 
     </div>
@@ -21,6 +21,14 @@
     <div class="nav-item" id="skyline" data-target="skyline">
       <i class="far fa-chart-bar text-lg"></i>
       <span>Skyline</span>
+    </div>
+    <div class="nav-item" id="scurvecs" data-target="scurvecs">
+      <i class="fas fa-chart-line text-lg"></i>
+      <span>S-Curve Checksheet</span>
+    </div>
+    <div class="nav-item" id="scurvedossier" data-target="scurvedossier">
+      <i class="fas fa-chart-area text-lg"></i>
+      <span>S-Curve Handover</span>
     </div>
 
     <div class="nav-item" data-action="dropdown" target-action="#dropdown-settings">
@@ -40,17 +48,44 @@
     </div>
 
   </nav>
+  <div class="modal hidden" id="modal-username">
+    <div class="modal-content md">
+      <div class="modal-header">
+        <div class="header-content">User name</div>
+        <div class="header-action">
+          <button class="btn-close" target-action="dismiss">
+            <i class="fas fa-times fa-fw"></i>
+          </button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="group-input two-lines fw">
+          <label for="username">Please input your Username</label>
+          <input type="text" name="username" id="username">
 
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ok" target-action="submit">OK</button>
+        <button class="btn btn-cancel" target-action="dismiss">Cancel</button>
+      </div>
+
+    </div>
+
+  </div>
 
 
   <script>
+
     $(document).ready(function () {
-      $('#summary, #subsystem, #skyline, #settings').on('click', function (e) {
-        let target = $(this)
-        let tab = $(target).attr('data-target')
-        localStorage.setItem('selectTab', tab)
-        navigate(tab)
-      })
+
+      $('.navbar .nav-item')
+        .on('click', function (e) {
+          let target = $(this)
+          let tab = $(target).attr('data-target')
+          localStorage.setItem('selectTab', tab)
+          navigate(tab)
+        })
 
       $('[data-action=dropdown]').on('click', function (e) {
 

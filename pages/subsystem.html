@@ -39,6 +39,12 @@
     function executeFilter(facility, phase, discipline = null, subsystem = null) {
       filteredData = skylineData.filter(x => x.Facility == facility && x.Phase == phase)
 
+      console.log(skylineData)
+      console.log(filteredData)
+      if (filteredData.length == 0)
+        return
+
+
       let tableData = filteredData.map(
         x => {
           return {
@@ -70,7 +76,7 @@
             "PartialApproved": x.PartialRFCApprovedByCPYCOM,
             "FinalApproved": x.FinalRFCApprovedByCPYCOM,
             "COW": x.COW,
-            "Handover": x.Handover,
+            "HandOver": x.HandOver,
             // "WalkdownLeader": x.WalkdownLeader,
             "Remarks": x.Remarks,
             // "Comment1": x.Comment1,
@@ -89,7 +95,7 @@
         }
       )
 
-      // console.log(tableData);
+      console.log('Table Data:: ', tableData);
 
       let tableHeaders = Object.keys(tableData[0])
       $("#table-skyline").html('<thead><tr>' +

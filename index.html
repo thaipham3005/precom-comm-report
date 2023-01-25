@@ -74,17 +74,16 @@
   <!-- Skyline  -->
   <script type="module" src="javascript/skyline/skyline.js"></script>
 
-
   <!-- Local style -->
   <link href="style.css" rel="stylesheet" type="text/css" />
-  <script src="javascript/precom-comm-report/precom-comm.v1.js"></script>
+  <script defer src="javascript/local/precom-comm.v1.js"></script>
+  <script defer src="javascript/local/modal.js"></script>
 
 </head>
 
 <body>
   <header id="main-header"></header>
   <div class="wrapper">
-
     <div class="content-wrapper">
       <aside id="main-sidebar" aria-display="show"></aside>
       <div id="page-loader" class="loader"></div>
@@ -95,27 +94,57 @@
 
         </div>
         <!-- <footer id="main-footer" /> -->
+        <div class="btn btn-round" id="btn-login" action="open-modal" target="#modal-user">
+          <i class="fas fa-sign-in-alt text-lg"></i>
+        </div>
       </div>
     </div>
   </div>
+
 </body>
 
 </html>
 
+
 <script>
+
   let domain = window.location.pathname
-  console.log(domain);
-  let service = 'sheetlabs'
-  let selectFacility = localStorage.getItem('facility') || 'JA'
-  let selectPhase = localStorage.getItem('phase') || 'RFC'
-  let selectDiscipline = localStorage.getItem('discipline')
-  let selectTab = localStorage.getItem('selectTab') || 'summary'
+  // console.log(domain);
+  let service = 'GoogleSheetAPI'
+
+  let storedSelection = localStorage.getItem('storedSelection') ?
+    JSON.parse(localStorage.getItem('storedSelection')) : {
+      location: 'ONV',
+      facility: 'JA',
+      phase: 'RFC',
+      discipline: 'All',
+      subsystem: 'All',
+      tab: 'summary'
+    }
+  let selectLocation = storedSelection.location
+  let selectFacility = storedSelection.facility
+  let selectPhase = storedSelection.phase
+  let selectDiscipline = storedSelection.discipline
+  let selectSubsystem = storedSelection.subsystem
+  let selectTab = storedSelection.tab
+
+  let storedProfile = localStorage.getItem('storedProfile') ?
+    JSON.parse(localStorage.getItem('storedProfile')) : {
+      userName: 'N/A',
+      initialName: 'N/A',
+      createdTime: null,
+      lastSync: null
+    }
+  console.log("storedSelection:: ", storedSelection);
+  console.log("storedProfile:: ", storedProfile);
   let storedData = ''
   let isDataPresence = ''
   let isSidebarShow = true
+
   let skylineData = []
   let summaryData = []
   let skylineChartData = []
+
   let errorCount = parseInt(localStorage.getItem('errorCount')) || 0
   let selection = [selectFacility, selectPhase, selectDiscipline]
   let filterParams = ''
@@ -123,52 +152,14 @@
   let table
 
 
-  const navigation = [
-    {
-      page: 'summary',
-      location: './pages/summary.html'
-    }, {
-      page: 'subsystem',
-      location: './pages/subsystem.html'
-    }, {
-      page: 'skyline',
-      location: './pages/skyline.html'
-    }, {
-      page: 'settings',
-      location: './pages/settings.html'
-    }, {
-      page: 'error404',
-      location: './pages/error404.html'
-    }, {
-      page: 'error401',
-      location: './pages/unauthorized.html'
-    }, {
-      page: 'errorBackend',
-      location: './pages/failedbackend.html'
-    }
-  ]
-
-  const API = [
-    {
-      host: 'sheetlabs',
-      data: {
-        skylineData: 'https://app.sheetlabs.com/RWIN/SkylineData',
-        // checksheetSummary: 'https://app.sheetlabs.com/RWIN/ChecksheetSummary'
-      }
-    }
-
-  ]
-
   $('#main-header').load('./components/header.html')
   $('#main-footer').load('./components/footer.html')
   $('#main-sidebar').load('./components/sidebar.html')
 
 
   $(document).ready(function () {
-    preloadPage(selectTab)
 
-    // let err = skylineData.filter(x => x.Progress > 100)
-    // console.log('Error : ', err);
+    preloadPage(selectTab)
 
   })
 

@@ -1,12 +1,27 @@
 <div class="page">
-  <div class="card">
-    <div class="card-header"></div>
-    <div class="card-content">
-      <div class="row">
-        <div class="col-md-12 col-12">
+  <div class="row">
+    <div class="col-md-6 col-12">
+      <div class="card">
+        <div class="card-header">
+          RFC Summary
+        </div>
+        <div class="card-content">
+          <div class="row">
+            <div class="col-md-6 col-12">
+              <div class="facility">
 
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
 </div>
+<script>
+
+  fetchSummary().then(async function () {
+    console.log(summaryData);
+  })
+</script>
