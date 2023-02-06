@@ -1,27 +1,76 @@
 <div class="page">
-  <div class="row">
-    <div class="col-md-6 col-12">
-      <div class="card">
-        <div class="card-header">
-          RFC Summary
-        </div>
-        <div class="card-content">
-          <div class="row">
-            <div class="col-md-6 col-12">
-              <div class="facility">
-
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 col-12 card-container">
+        <div class="card">
+          <div class="card-header">
+            RFC Summary
+          </div>
+          <div class="card-content">
+            <div class="facility">
+              <!-- <div class="facility-header">
+                <span class="location">ONV</span>
+                <span class="phase">RFC</span>
+                <span class="facility-code">JA</span>
+              </div> -->
+              <div class="checksheet-status" title="Checksheet Status">
+                <div class="total"></div>
+                <div class="completed"></div>
+                <div class="remaining"></div>
+                <div class="percentage"></div>
+              </div>
+              <div class="dossier-status" title="Dossier Status">
+                <div class="total"></div>
+                <div class="completed"></div>
+                <div class="remaining"></div>
+                <div class="percentage"></div>
+              </div>
+              <div class="dossier-thisweek">
+                <div class="total"></div>
+                <div class="final"></div>
+                <div class="partial"></div>
+                <div class="percentage"></div>
               </div>
             </div>
+
           </div>
         </div>
+
       </div>
     </div>
+
   </div>
 
 </div>
 <script>
 
-  fetchSummary().then(async function () {
-    console.log(summaryData);
+  preloadSummary().then(async function () {
+    // console.log("summaryData:: ", summaryData);
+    const summaryReport = summaryData.filter(x => x.Location == 'ONV')
+
+    // console.log("summaryReport::", summaryReport);
+
+    let count = summaryReport.length
+    let container = $('.container .row')
+    let cards = $('.card-container')
+    for (i = 0; i < count - 1; i++) {
+      $(cards).clone().appendTo(container)
+    }
+
+    let facilities = $('.card')
+    for (i = 0; i < count; i++) {
+      facilities.eq(i).find('.card-header').html(`${summaryReport[i].Facility} ${summaryReport[i].Phase} Summary (${summaryReport[i].Location})`)
+
+      facilities.eq(i).find('.checksheet-status .total').text(`Total CS: ${summaryReport[i].ChecksheetTotal}`)
+      facilities.eq(i).find('.checksheet-status .completed').html(`Completed CS: ${summaryReport[i].ChecksheetDone}`)
+      facilities.eq(i).find('.checksheet-status .remaining').text(`Remaining CS: ${summaryReport[i].ChecksheetRemain}`)
+      facilities.eq(i).find('.checksheet-status .percentage').text(` CS %: ${summaryReport[i].ChecksheetPercentage}%`)
+
+      facilities.eq(i).find('.dossier-status .total').text(`Total Dossiers: ${summaryReport[i].DossierTotal}`)
+      facilities.eq(i).find('.dossier-status .completed').html(`Completed Dossiers: ${summaryReport[i].DossierFinal}`)
+      facilities.eq(i).find('.dossier-status .remaining').text(`Remaining Dossiers: ${summaryReport[i].DossierRemain}`)
+      facilities.eq(i).find('.dossier-status .percentage').text(` Dossiers %: ${summaryReport[i].DossierPercentage}%`)
+    }
+
   })
 </script>

@@ -1,3 +1,128 @@
 <div class="page">
-    Skyline
+  <div class="cell-info hidden" id="cell-info">
+    <div class="cell-header">
+      <div class="header-content">
+        <div class="subsystem"></div>
+        <div class="description"></div>
+      </div>
+      <div class="cell-action">
+        <button class="btn-close" target-action="dismiss">
+          <i class="fas fa-times fa-fw"></i>
+        </button>
+      </div>
+    </div>
+    <div class="cell-body">
+      <div class="group-input">
+        <label for="">Total CS</label>
+        <div id="total-cs">50</div>
+      </div>
+      <div class="checkshets">43</div>
+      <div class="electrical">fdas</div>
+    </div>
+    <div class="cell-footer">
+      fdsafds
+    </div>
+
+  </div>
+  <div class="card">
+    <div class="card-header">
+      Skyline Chart
+    </div>
+    <div class="card-content">
+      <div class="row">
+        <div class="col-md-12 col-12">
+          <div class="skyline-container" id="skyline-container"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function () {
+      // preloadData()
+      // filterSkyline(selectFacility, selectPhase)
+      // chartSkyline()
+      preloadData().then(function () {
+        filterSkyline(selectFacility, selectPhase)
+      }).then(function () {
+        chartSkyline()
+      })
+    })
+
+
+    function filterSkyline(facility, phase, discipline = null) {
+      filteredData = skylineData.filter(x => x.Facility == facility && x.Phase == phase)
+
+      if (filteredData.length == 0)
+        return
+
+      skylineChartData = filteredData.map(
+        x => {
+          return {
+            // "__id": x.__id,
+            "Index": x.Index,
+            "Phase": x.Phase,
+            "Facility": x.Facility,
+            "SubSystem": x.SubSystem,
+            "Description": x.Description,
+            "Progress": x.TotalTotal > 0 ? parseFloat((x.TotalDone * 100 / x.TotalTotal).toFixed(2)) : 0,
+            "Total": x.TotalTotal > 0 ? x.TotalDone + " / " + x.TotalTotal : null,
+            "ELE": x.ELETotal > 0 ? x.ELEDone + " / " + x.ELETotal : null,
+            "INS": x.INSTotal > 0 ? x.INSDone + " / " + x.INSTotal : null,
+            "PVV": x.PVVTotal > 0 ? x.PVVDone + " / " + x.PVVTotal : null,
+            "BLD": x.BLDTotal > 0 ? x.BLDDone + " / " + x.BLDTotal : null,
+            "TEL": x.TELTotal > 0 ? x.TELDone + " / " + x.TELTotal : null,
+            "SAF": x.SAFTotal > 0 ? x.SAFDone + " / " + x.SAFTotal : null,
+            "HVAC": x.HVACTotal > 0 ? x.HVACDone + " / " + x.HVACTotal : null,
+            "MEC": x.MECTotal > 0 ? x.MECDone + " / " + x.MECTotal : null,
+            "Status": x.Status,
+            "PLA": x.PLA,
+            "PLB": x.PLB,
+            "PLC": x.PLC,
+            "Date": x.PlanApproval,
+            "PlanApproval": x.PlanApproval,
+            "ForecastWalkdown": x.ForecastWalkdown,
+            "ReForecastWalkdown": x.ReForecastWalkdown,
+            "ActualWalkdown": x.ActualWalkdown,
+            "SentForReview": x.SentForReview,
+            "PartialApproved": x.PartialRFCApproved,
+            "FinalApproved": x.FinalRFCApproved,
+            "COW": x.COW,
+            "HandOver": x.HandOver,
+            // "WalkdownLeader": x.WalkdownLeader,
+            "Remarks": x.Remarks,
+            // "Comment1": x.Comment1,
+            // "Comment2": x.Comment2,
+            // "COW1": x.COW1,
+            // "ELEWalkdown": x.ELEWalkdown,
+            // "INSWalkdown": x.INSWalkdown,
+            // "PVVWalkdown": x.PVVWalkdown,
+            // "BLDWalkdown": x.BLDWalkdown,
+            // "TELWalkdown": x.TELWalkdown,
+            // "SAFWalkdown": x.SAFWalkdown,
+            // "HVACWalkdown": x.HVACWalkdown,
+            // "MECWalkdown": x.MECWalkdown,
+          }
+        }
+      )
+
+      console.log('Chart Data:: ', skylineChartData);
+    }
+
+    function chartSkyline() {
+      $('.card-header').text(`Skyline Chart ${selectPhase} ${selectFacility} `)
+
+      const skyline = new Skyline(skylineChartData);
+
+      skyline.show();
+    }
+
+    $('.cell-info').find('.btn-close, .btn-cancel').on('click', function (e) {
+      let modal = $(this).parents('.cell-info')
+      $(modal).addClass('hidden')
+
+    })
+  </script>
+
+
 </div>

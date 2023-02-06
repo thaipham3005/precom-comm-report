@@ -1,11 +1,11 @@
 export class Skyline {
     constructor(source, options) {
         /**
-         * The version of Toastify
+         * The version of Skyline
          * @type {string}
          * @public
          */
-        this.version = "1.0.0";
+        this.version = "1.0.1";
 
         /**
          * The configuration object to configure Toastify
@@ -46,8 +46,8 @@ export class Skyline {
     _getMinDate() {
         let min = new Date(8640000000000000);
         this.source.forEach(data => {
-            if (Date.parse(data[6]) < min && data[6] != null) {
-                min = Date.parse(data[6]);
+            if (Date.parse(data.Date) < min && data.Date != null) {
+                min = Date.parse(data.Date);
             }
         })
         // console.log(`min: ${new Date(min)}`)
@@ -60,9 +60,9 @@ export class Skyline {
     _getMaxDate() {
         let max = new Date(-8640000000000000);;
         this.source.forEach(data => {
-            // console.log(data[6]);
-            if (Date.parse(data[6]) > max && data[6] != null) {
-                max = Date.parse(data[6]);
+            // console.log(data.Date);
+            if (Date.parse(data.Date) > max && data.Date != null) {
+                max = Date.parse(data.Date);
             }
         })
         // console.log(`max: ${new Date(max)}`)
@@ -124,8 +124,6 @@ export class Skyline {
 
             let weekNo = Math.floor((cellDate - this.firstMonday) / (7 * 24 * 3600 * 1000));
 
-
-
             if (cellDate) {
                 _listCells[weekNo].push(cell);
             }
@@ -183,6 +181,7 @@ export class Skyline {
 
         this.firstMonday = this._findMonday(from);
         this.weeksCount = this._getWeeksCount(this.firstMonday, to);
+
 
         this.cellOptions = {
             width: "100px",
@@ -293,10 +292,7 @@ class SkylineCell {
      * 
      */
     _getCellData() {
-        this.subsystem = this.data.subsystem
-
-
-
+        this.SubSystem = this.data.SubSystem
     }
     /**
      * Build the Skyline element
@@ -316,7 +312,7 @@ class SkylineCell {
 
         let title = document.createElement("div");
         title.className = "title";
-        title.innerText = this.test_pack;
+        title.innerText = this.SubSystem;
         skylineElement.insertBefore(title, skylineElement.lastChild);
 
 
@@ -327,25 +323,25 @@ class SkylineCell {
         completed.className = "completed";
         skylineElement.insertBefore(completed, skylineElement.lastChild);
 
-        let tooltip = document.createElement("div");
-        tooltip.innerHTML = `<span>Visual: ${this.visual_remain} (${this.visual_total})</span><br>`;
-        tooltip.innerHTML += `<span>NDT BW: ${this.ndtBW_remain} (${this.ndtBW_total})</span>`;
-        tooltip.className = "tooltip";
-        skylineElement.insertBefore(tooltip, skylineElement.lastChild);
+        // let tooltip = document.createElement("div");
+        // tooltip.innerHTML = `<span>Visual: ${this.visual_remain} (${this.visual_total})</span><br>`;
+        // tooltip.innerHTML += `<span>NDT BW: ${this.ndtBW_remain} (${this.ndtBW_total})</span>`;
+        // tooltip.className = "tooltip";
+        // skylineElement.insertBefore(tooltip, skylineElement.lastChild);
 
         // Triggering the click event of cell 
-        skylineElement.addEventListener(
-            "click",
-            (event) => {
-                var cellInfo = document.getElementsByClassName("cell-info")[0];
-                cellInfo.style.display = "block";
-                console.log(cellInfo.getElementsByClassName("test-pack")[0], this.test_pack);
-                cellInfo.getElementsByClassName("test-pack")[0].innerText = this.test_pack;
-                cellInfo.getElementsByClassName("plan-date")[0].innerText = convertDateFormat(this.plan_complete, "yyyy-mm-dd", "dd/mm/yyyy");
-            }
-        );
+        // skylineElement.addEventListener(
+        //     "click",
+        //     (event) => {
+        //         var cellInfo = document.getElementsByClassName("cell-info")[0];
+        //         cellInfo.style.display = "block";
+        //         console.log(cellInfo.getElementsByClassName("test-pack")[0], this.test_pack);
+        //         cellInfo.getElementsByClassName("test-pack")[0].innerText = this.test_pack;
+        //         cellInfo.getElementsByClassName("plan-date")[0].innerText = convertDateFormat(this.plan_complete, "yyyy-mm-dd", "dd/mm/yyyy");
+        //     }
+        // );
 
-        // console.log(skylineElement)
+        console.log(skylineElement)
         return skylineElement;
     }
 

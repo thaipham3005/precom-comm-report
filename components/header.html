@@ -9,34 +9,43 @@
   <!-- <section class="space"></section> -->
   <nav class="navbar">
 
-    <div class="nav-item" id="summary" data-target="summary">
+    <div class="nav-item" id="summary" data-target="summary" title="Summary">
       <i class="fas fa-chart-pie text-lg"></i>
       <span>Summary</span>
 
     </div>
-    <div class="nav-item" id="subsystem" data-target="subsystem">
+    <div class="nav-item" id="subsystem" data-target="subsystem" title="Sub-systems">
       <i class="far fa-list-alt text-lg"></i>
       <span>Sub-systems</span>
     </div>
-    <div class="nav-item" id="skyline" data-target="skyline">
+
+
+    <div class="nav-item" id="skyline" data-target="skyline" title="Skyline">
       <i class="far fa-chart-bar text-lg"></i>
       <span>Skyline</span>
     </div>
-    <div class="nav-item" id="scurvecs" data-target="scurvecs">
+    <div class="nav-item" id="scurvecs" data-target="scurvecs" title="S-Curve Checksheet">
       <i class="fas fa-chart-line text-lg"></i>
       <span>S-Curve Checksheet</span>
     </div>
-    <div class="nav-item" id="scurvedossier" data-target="scurvedossier">
+    <div class="nav-item" id="scurvedossier" data-target="scurvedossier" title="S-Curve Handover">
       <i class="fas fa-chart-area text-lg"></i>
       <span>S-Curve Handover</span>
     </div>
-
-    <div class="nav-item" data-action="dropdown" target-action="#dropdown-settings">
+    <div class="nav-item" id="checksheet" data-target="checksheet" title="Check sheets">
+      <i class="fas fa-file-contract text-lg"></i>
+      <span>Check sheets</span>
+    </div>
+    <div class="nav-settings" data-action="dropdown" target-action="#dropdown-settings" title="Settings">
       <span><i class="fas fa-cogs text-lg"></i></span>
 
     </div>
 
     <div id="dropdown-settings" class="dropdown-list hidden">
+      <div id="btn-login" action="open-modal" target="#modal-user">
+        <i class="fas fa-sign-in-alt "></i>
+        <span>Log in</span>
+      </div>
       <div id="settings" data-target="settings">
         <i class="fas fa-cog"></i>
         <span>Settings</span>
@@ -83,7 +92,14 @@
         .on('click', function (e) {
           let target = $(this)
           let tab = $(target).attr('data-target')
-          localStorage.setItem('selectTab', tab)
+          // localStorage.setItem('selectTab', tab)
+          storedSelection = {
+            ...storedSelection,
+            ...{
+              tab: tab
+            }
+          }
+          localStorage.setItem('storedSelection', JSON.stringify(storedSelection))
           navigate(tab)
         })
 
@@ -116,7 +132,29 @@
       $('#btn-refresh').on('click', function (e) {
         localStorage.removeItem('errorCount')
         localStorage.removeItem('skylineData')
-        window.location.reload()
+        localStorage.removeItem('summaryData')
+        reloadPage()
+        // window.location.reload()
+      })
+
+      $('#btn-login').on('click', function (e) {
+        $('.modal').removeClass('hidden')
+        let modalcontent = $('#modal-username').find('.modal-content')
+        $(modalcontent).removeClass('flyout')
+
+        $(modalcontent).addClass('flyin')
+
+
+      })
+
+      $('.modal').find('.btn-close, .btn-cancel').on('click', function (e) {
+        let modal = $(this).parents('.modal')
+        let modalcontent = $(this).parents('.modal-content')
+        $(modalcontent).removeClass('flyin')
+        $(modalcontent).addClass('flyout')
+
+        window.setTimeout(() => $(modal).addClass('hidden'), 500)
+
       })
     })
   </script>

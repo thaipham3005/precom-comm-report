@@ -1,19 +1,22 @@
 <div class="page">
-  <div class="card">
-    <div class="card-header">
-      Skyline Data
-    </div>
-    <div class="card-content">
-      <div class="row">
-        <div class="col-md-12 col-12">
-          <table id="table-skyline"
-            class="table table-bordered compact header-contrast dt-responsive text-center has-buttons custom-scrollbar"
-            style="width:100%; background-color: #fff;"></table>
-        </div>
+
+
+</div>
+<div class="card">
+  <div class="card-header">
+    Skyline Chart
+  </div>
+  <div class="card-content">
+    <div class="row">
+      <div class="col-md-12 col-12">
+        <table id="table-skyline"
+          class="table table-bordered compact header-contrast dt-responsive text-center has-buttons custom-scrollbar"
+          style="width:100%; background-color: #fff;"></table>
       </div>
     </div>
   </div>
-  <!-- <div class="card">
+</div>
+<!-- <div class="card">
     <div class="card-header"></div>
     <div class="card-content">
       <div class="row">
@@ -23,99 +26,115 @@
       </div>
     </div>
   </div> -->
-  <script>
-    $(document).ready(function () {
-      executeFilter(selectFacility, selectPhase)
-    })
+<script>
+  $(document).ready(function () {
+    preloadData()
+    executeFilter(selectFacility, selectPhase)
+  })
 
-    $('#btn-filter').on('click', function (e) {
-      let _facility = $('#select-facility').val()
-      let _phase = $('#select-phase').val()
+  $('#btn-filter').on('click', function (e) {
+    let _facility = $('#select-facility').val()
+    let _phase = $('#select-phase').val()
 
-      // console.log(_facility, ' - ', _phase)
-      executeFilter(_facility, _phase)
-    })
+    // console.log(_facility, ' - ', _phase)
+    executeFilter(_facility, _phase)
+  })
 
-    function executeFilter(facility, phase, discipline = null, subsystem = null) {
-      filteredData = skylineData.filter(x => x.Facility == facility && x.Phase == phase)
+  function executeFilter(facility, phase, discipline = null, subsystem = null) {
+    filteredData = skylineData.filter(x => x.Facility == facility && x.Phase == phase)
 
-      console.log(skylineData)
-      console.log(filteredData)
-      if (filteredData.length == 0)
-        return
+    console.log(skylineData)
+    console.log(filteredData)
+    if (filteredData.length == 0)
+      return
 
 
-      let tableData = filteredData.map(
-        x => {
-          return {
-            "__id": x.__id,
-            "Index": x.Index,
-            "Phase": x.Phase,
-            "Facility": x.Facility,
-            "SubSystem": x.SubSystem,
-            "Description": x.Description,
-            "Progress": x.TotalTotal > 0 ? parseFloat((x.TotalDone * 100 / x.TotalTotal).toFixed(2)) : 0,
-            "Total": x.TotalTotal > 0 ? x.TotalDone + " / " + x.TotalTotal : null,
-            "ELE": x.ELETotal > 0 ? x.ELEDone + " / " + x.ELETotal : null,
-            "INS": x.INSTotal > 0 ? x.INSDone + " / " + x.INSTotal : null,
-            "PVV": x.PVVTotal > 0 ? x.PVVDone + " / " + x.PVVTotal : null,
-            "BLD": x.BLDTotal > 0 ? x.BLDDone + " / " + x.BLDTotal : null,
-            "TEL": x.TELTotal > 0 ? x.TELDone + " / " + x.TELTotal : null,
-            "SAF": x.SAFTotal > 0 ? x.SAFDone + " / " + x.SAFTotal : null,
-            "HVAC": x.HVACTotal > 0 ? x.HVACDone + " / " + x.HVACTotal : null,
-            "MEC": x.MECTotal > 0 ? x.MECDone + " / " + x.MECTotal : null,
-            "Priority": x.Priority,
-            "PLA": x.PLA,
-            "PLB": x.PLB,
-            "PLC": x.PLC,
-            "PlanApproval": x.PlanApproval,
-            "ForecastWalkdown": x.ForecastWalkdown,
-            "ReForecastWalkdown": x.ReForecastWalkdown,
-            "ActualWalkdown": x.ActualWalkdown,
-            // "ApprovedByCPYConst": x.ApprovedByCPYConst,
-            "PartialApproved": x.PartialRFCApprovedByCPYCOM,
-            "FinalApproved": x.FinalRFCApprovedByCPYCOM,
-            "COW": x.COW,
-            "HandOver": x.HandOver,
-            // "WalkdownLeader": x.WalkdownLeader,
-            "Remarks": x.Remarks,
-            // "Comment1": x.Comment1,
-            // "Comment2": x.Comment2,
-            // "COW1": x.COW1,
-            // "ELEWalkdown": x.ELEWalkdown,
-            // "INSWalkdown": x.INSWalkdown,
-            // "PVVWalkdown": x.PVVWalkdown,
-            // "BLDWalkdown": x.BLDWalkdown,
-            // "TELWalkdown": x.TELWalkdown,
-            // "SAFWalkdown": x.SAFWalkdown,
-            // "HVACWalkdown": x.HVACWalkdown,
-            // "MECWalkdown": x.MECWalkdown,
+    let tableData = filteredData.map(
+      x => {
+        // let status = ''
+        // if (x.FinalApproved != '' && x.FinalApproved != null) {
+        //   status = 'Handover'
+        // } else if (x.PartialApproved != '' && x.PartialApproved != null) {
+        //   status = "Partial Handover"
+        // }
+        // else if (x.ActualWalkdown != '' && x.ActualWalkdown != null) {
+        //   status = "Walkdown done"
+        // }
+        // else if (x.SentForReview != '' && x.SentForReview != null) {
+        //   status = "Sent for review"
+        // }
+        return {
+          "__id": x.__id,
+          "Index": x.Index,
+          "Phase": x.Phase,
+          "Facility": x.Facility,
+          "SubSystem": x.SubSystem,
+          "Description": x.Description,
+          // "Progress": x.TotalTotal > 0 ? parseFloat((x.TotalDone * 100 / x.TotalTotal).toFixed(2)) : 0,
+          "Status": x.Status,
+          "Total": x.TotalTotal > 0 ? x.TotalDone + " / " + x.TotalTotal : null,
+          "ELE": x.ELETotal > 0 ? x.ELEDone + " / " + x.ELETotal : null,
+          "INS": x.INSTotal > 0 ? x.INSDone + " / " + x.INSTotal : null,
+          "PVV": x.PVVTotal > 0 ? x.PVVDone + " / " + x.PVVTotal : null,
+          "BLD": x.BLDTotal > 0 ? x.BLDDone + " / " + x.BLDTotal : null,
+          "TEL": x.TELTotal > 0 ? x.TELDone + " / " + x.TELTotal : null,
+          "SAF": x.SAFTotal > 0 ? x.SAFDone + " / " + x.SAFTotal : null,
+          "HVAC": x.HVACTotal > 0 ? x.HVACDone + " / " + x.HVACTotal : null,
+          "MEC": x.MECTotal > 0 ? x.MECDone + " / " + x.MECTotal : null,
+          "Progress": x.Progress,
+          "PLA": x.PLA,
+          "PLB": x.PLB,
+          "PLC": x.PLC,
+          "PlanApproval": x.PlanApproval,
+          "ForecastWalkdown": x.ForecastWalkdown,
+          "ReForecastWalkdown": x.ReForecastWalkdown,
+          "ActualWalkdown": x.ActualWalkdown,
+          "SentForReview": x.SentForReview,
+          "PartialApproved": x.PartialRFCApproved,
+          "FinalApproved": x.FinalRFCApproved,
+          "COW": x.COW,
+          "HandOver": x.HandOver,
+          // "WalkdownLeader": x.WalkdownLeader,
+          "Remarks": x.Remarks,
+          // "Status": x.Status
+          // "Comment1": x.Comment1,
+          // "Comment2": x.Comment2,
+          // "COW1": x.COW1,
+          // "ELEWalkdown": x.ELEWalkdown,
+          // "INSWalkdown": x.INSWalkdown,
+          // "PVVWalkdown": x.PVVWalkdown,
+          // "BLDWalkdown": x.BLDWalkdown,
+          // "TELWalkdown": x.TELWalkdown,
+          // "SAFWalkdown": x.SAFWalkdown,
+          // "HVACWalkdown": x.HVACWalkdown,
+          // "MECWalkdown": x.MECWalkdown,
 
-          }
         }
-      )
+      }
+    )
 
-      console.log('Table Data:: ', tableData);
+    console.log('Table Data:: ', tableData);
 
-      let tableHeaders = Object.keys(tableData[0])
-      $("#table-skyline").html('<thead><tr>' +
-        tableHeaders.map(x => {
-          if (x == "Description")
-            return `<th style="min-width:150px;">${x}</th>`
-          else if (x == "Remarks")
-            return `<th style="min-width:150px;">${x}</th>`
-          else if (['Total', 'ELE', 'INS', 'PVV', 'TEL', 'SAF', 'BLD', 'HVAC', 'MEC'].includes(x)) {
-            return `<th style="min-width:40px;">${x}</th>`
-          }
+    let tableHeaders = Object.keys(tableData[0])
+    $("#table-skyline").html('<thead><tr>' +
+      tableHeaders.map(x => {
+        if (x == "Description")
+          return `<th style="min-width:150px;">${x}</th>`
+        else if (x == "Remarks")
+          return `<th style="min-width:150px;">${x}</th>`
+        else if (['Total', 'ELE', 'INS', 'PVV', 'TEL', 'SAF', 'BLD', 'HVAC', 'MEC'].includes(x))
+          return `<th style="min-width:40px;">${x}</th>`
+        else if (x == "Status")
+          return `<th style="min-width:80px;">${x}</th>`
 
-          return `<th>${x}</th>`
-        }).join("")
-        + "</tr></thead>")
+        return `<th>${x}</th>`
+      }).join("")
+      + "</tr></thead>")
 
-      // console.log("Filtered data : ", filteredData)
-      tableSkyline("#table-skyline", tableData)
+    // console.log("Filtered data : ", filteredData)
+    tableSkyline("#table-skyline", tableData)
 
-      $('.card-header').text(`Sub-System Status ${selectPhase} ${selectFacility} `)
-    }
-  </script>
+    $('.card-header').text(`Sub-System Status ${selectPhase} ${selectFacility} `)
+  }
+</script>
 </div>

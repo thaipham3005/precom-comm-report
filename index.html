@@ -35,7 +35,7 @@
     integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 
   <!-- Bootstrap Bundle with Popper -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
     crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
@@ -51,33 +51,30 @@
   <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.min.js"></script> -->
 
   <!-- MomentJS -->
-  <script src="javascript/moment/moment.min.js"></script>
+  <script defer src="javascript/moment/moment.min.js"></script>
 
   <!-- Toastify -->
   <script src="javascript/toastify/toastify.js"></script>
   <link href="javascript/toastify/toastify.css" rel="stylesheet" type="text/css" />
 
   <!-- DataTable -->
-  <script src="javascript/datatable/js/jquery.dataTables.min.js"></script>
-  <script src="javascript/datatable/js/dataTables.bootstrap4.min.js"></script>
+  <script defer src="javascript/datatable/js/jquery.dataTables.min.js"></script>
+  <script defer src="javascript/datatable/js/dataTables.bootstrap4.min.js"></script>
   <link href="javascript/datatable/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-  <script src="javascript/datatable-buttons/js/dataTables.buttons.js"></script>
+  <script defer src="javascript/datatable-buttons/js/dataTables.buttons.js"></script>
 
-  <script src="javascript/datatable-buttons/js/buttons.bootstrap4.js"></script>
-  <script src="javascript/datatable-buttons/js/buttons.colVis.js"></script>
-  <script src="javascript/datatable-buttons/js/buttons.print.js"></script>
+  <script defer src="javascript/datatable-buttons/js/buttons.bootstrap4.js"></script>
+  <script defer src="javascript/datatable-buttons/js/buttons.colVis.js"></script>
+  <script defer src="javascript/datatable-buttons/js/buttons.print.js"></script>
 
   <!-- Select2 -->
-  <script src="javascript/select2/js/select2.full.min.js"></script>
+  <script defer src="javascript/select2/js/select2.full.min.js"></script>
   <link href="javascript/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
-
-  <!-- Skyline  -->
-  <script type="module" src="javascript/skyline/skyline.js"></script>
 
   <!-- Local style -->
   <link href="style.css" rel="stylesheet" type="text/css" />
   <script defer src="javascript/local/precom-comm.v1.js"></script>
-  <script defer src="javascript/local/modal.js"></script>
+  <script defer src="javascript/skyline/skyline.v1.js"></script>
 
 </head>
 
@@ -94,13 +91,13 @@
 
         </div>
         <!-- <footer id="main-footer" /> -->
-        <div class="btn btn-round" id="btn-login" action="open-modal" target="#modal-user">
+        <!-- <div class="btn btn-round" id="btn-login" action="open-modal" target="#modal-user">
           <i class="fas fa-sign-in-alt text-lg"></i>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
-
+  <div id="snackbar"></div>
 </body>
 
 </html>
@@ -109,8 +106,46 @@
 <script>
 
   let domain = window.location.pathname
-  // console.log(domain);
   let service = 'GoogleSheetAPI'
+  const STATUS = [
+    {
+      code: 0,
+      status: 'normal',
+      description: ''
+    }, {
+      code: 1,
+      status: 'signed-off',
+      description: 'Signed off'
+    }, {
+      code: 2,
+      status: 'partial',
+      description: 'Partial Handover'
+    }, {
+      code: 3,
+      status: 'walkdown',
+      description: 'Walkdown done'
+    }, {
+      code: 4,
+      status: 'reviewing',
+      description: 'Dossier reviewing'
+    }, {
+      code: 5,
+      status: 'late-material',
+      description: 'Late Materials'
+    }, {
+      code: 6,
+      status: 'cow',
+      description: 'COW'
+    }, {
+      code: 7,
+      status: 'ready',
+      description: 'Ready to submit'
+    }, {
+      code: 8,
+      status: 'overdue',
+      description: 'Overdue'
+    }
+  ]
 
   let storedSelection = localStorage.getItem('storedSelection') ?
     JSON.parse(localStorage.getItem('storedSelection')) : {
@@ -135,22 +170,32 @@
       createdTime: null,
       lastSync: null
     }
-  console.log("storedSelection:: ", storedSelection);
-  console.log("storedProfile:: ", storedProfile);
+  // console.log("storedSelection:: ", storedSelection);
+  // console.log("storedProfile:: ", storedProfile);
   let storedData = ''
-  let isDataPresence = ''
+  let storedSummary = ''
   let isSidebarShow = true
 
+  let settings = localStorage.getItem('settings') ?
+    JSON.parse(localStorage.getItem('settings')).data : {
+      RefreshRate: 3600,
+      RefreshSettings: 28800,
+      RefreshForcing1: '9:00',
+      RefreshForcing2: '14:30',
+      ThemeColor: 'light',
+      ThemeStyle: 'Simple'
+    }
   let skylineData = []
   let summaryData = []
   let skylineChartData = []
 
   let errorCount = parseInt(localStorage.getItem('errorCount')) || 0
-  let selection = [selectFacility, selectPhase, selectDiscipline]
+  // let selection = [selectFacility, selectPhase, selectDiscipline]
   let filterParams = ''
   let filteredData = []
   let table
 
+  let activeCell = 0
 
   $('#main-header').load('./components/header.html')
   $('#main-footer').load('./components/footer.html')
@@ -158,9 +203,11 @@
 
 
   $(document).ready(function () {
-
+    fetchSettings()
     preloadPage(selectTab)
 
+    let lastUpdate = localStorage.getItem('lastUpdate') ? localStorage.getItem('lastUpdate') : localStorage.getItem('lastUpdateSummary')
+    showSnackbar("normal", `Last updated data: ${lastUpdate}`);
   })
 
 </script>
